@@ -1,32 +1,30 @@
 import sys
 sys.stdin = open("input.txt", "r")
 
-def is_minimum(x):
-    global j
-    for i in range(x):
-        if i == j or arr[x][i] >= sm:
-            return False
+def bfs_drive(n):
+    global sm, charge
+    if n >= len(lst):        # 종점에 도착하면
+        if sm >= charge:     # 충전 최소 횟수보다 작으면
+            sm = charge      # 현재 값으로 대체
+        return
 
-    return True
+    if sm <= charge:         # 현재 충전 횟수가 이전 충전 횟수보다 커지만 백트래킹
+        return
 
-def price(x):
-    global ans, sm
-    if x == N:
-        return sm
-    else:
-        for j in range(N):          # 0, 1, 2
-            ans += arr[x][j]
-            if is_minimum(x):
-                if sm >= ans:
-                    sm = ans
-                price(x + 1)
+    for i in range(n + lst[n], n, -1):
+        charge += 1
+        bfs_drive(i)
+        charge -= 1
+
+
 
 T = int(input())
-for test_case in range(1, 2):
-    N = int(input())
-    arr = [list(map(int, input().split())) for _ in range(N)]
-    sm = 99 * N
-    ans = 0
+for test_case in range(1, T + 1):
+    lst = list(map(int, input().split()))           # len(lst) = 5
+    N = lst[0]
+    sm = 9999999            # 충전 최소 횟수
+    charge = 0              # 현재 충전 횟수
 
-    price(0)
-    print(ans)
+    bfs_drive(1)                # idx 1부터 충전량 시작
+
+    print(f'#{test_case} {sm - 1}')
